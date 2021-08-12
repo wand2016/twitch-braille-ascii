@@ -6,6 +6,10 @@ export function getNega(): HTMLInputElement {
   return document.querySelector("#nega") as HTMLInputElement;
 }
 
+export function getBG(): HTMLInputElement {
+  return document.querySelector("#bg") as HTMLInputElement;
+}
+
 export function getCanvasPreviewRaw(): HTMLCanvasElement {
   return document.querySelector("#preview-raw") as HTMLCanvasElement;
 }

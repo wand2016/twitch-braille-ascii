@@ -1,4 +1,5 @@
 import {
+  getBG,
   getCanvasPreviewDithered,
   getCanvasPreviewRaw,
   getClipBoardButton,
@@ -12,7 +13,7 @@ import {
   dither,
   identity,
   negate,
-  transparencyToWhiteness,
+  applyTransparency,
 } from "./libs/filter";
 const { tenjify } = require("tenjify");
 
@@ -35,9 +36,9 @@ async function update() {
   putImageDataToCanvas(imageData, getCanvasPreviewRaw());
 
   const filter = composite(
-    dither,
     getNega().checked ? negate : identity,
-    transparencyToWhiteness
+    applyTransparency(Number(getBG().value)),
+    dither
   );
 
   const filteredImageData = filter(imageData);
@@ -55,6 +56,7 @@ function copyToClipboard() {
 document.addEventListener("DOMContentLoaded", () => {
   getFileSelect().addEventListener("change", update);
   getNega().addEventListener("change", update);
+  getBG().addEventListener("change", update);
   getClipBoardButton().addEventListener("click", copyToClipboard);
 
   console.log("ready");
