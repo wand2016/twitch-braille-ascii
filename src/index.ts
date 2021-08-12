@@ -12,7 +12,7 @@ import {
   dither,
   identity,
   negate,
-  transparentToWhite,
+  transparencyToWhiteness,
 } from "./libs/filter";
 const { tenjify } = require("tenjify");
 
@@ -37,7 +37,7 @@ async function update() {
   const filter = composite(
     dither,
     getNega().checked ? negate : identity,
-    transparentToWhite
+    transparencyToWhiteness
   );
 
   const filteredImageData = filter(imageData);
