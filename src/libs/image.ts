@@ -34,3 +34,13 @@ export async function loadImageData(
   ctx!.drawImage(imageElement, 0, 0, resolution.width, resolution.height);
   return ctx!.getImageData(0, 0, resolution.width, resolution.height);
 }
+
+export function imageDataToDataUrl(imageData: ImageData) {
+  const tmpCanvas = document.createElement("canvas");
+  tmpCanvas.width = imageData.width;
+  tmpCanvas.height = imageData.height;
+
+  tmpCanvas.getContext("2d")!.putImageData(imageData, 0, 0);
+
+  return tmpCanvas.toDataURL();
+}
