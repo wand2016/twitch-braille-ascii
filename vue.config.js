@@ -1,4 +1,8 @@
 module.exports = {
+  publicPath:
+    process.env.NODE_ENV === "production"
+      ? "/twitch-braille-ascii/public/"
+      : "/",
   pages: {
     index: {
       // entry for the page
