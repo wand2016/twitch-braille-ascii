@@ -35,7 +35,7 @@ export default defineComponent({
   },
   emits: ["update:nega", "update:bg", "update:imageUrl"],
   setup(props: Props, { emit }: SetupContext) {
-    const onFileSelect = (e: any) => {
+    const onFileSelect = (e: InputEvent & { target: { files: FileList } }) => {
       const file: File | null = e.target.files[0] ?? null;
       const objectUrl = file ? URL.createObjectURL(file) : null;
       emit("update:imageUrl", objectUrl);
