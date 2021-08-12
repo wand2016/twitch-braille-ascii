@@ -1,15 +1,24 @@
-# 🚀 Welcome to your new awesome project!
+# twitch-braille-ascii
 
-This project has been created using **webpack-cli**, you can now run
+## Project setup
+```
+npm install
+```
 
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
+
+### Compiles and minifies for production
 ```
 npm run build
 ```
 
-or
-
+### Lints and fixes files
 ```
-yarn build
+npm run lint
 ```
 
-to bundle your application
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).

@@ -1,1 +1,17 @@
-<!doctype html><html><head><meta charset="utf-8"/><title>twitchの点字アスキーアートを作るやつ</title><script defer="defer" src="main.js"></script></head><body><h1>twitchの点字アスキーアートを作るやつ</h1><fieldset><legend>入力</legend><p><input id="file-select" type="file"/></p><p><label>反転<input id="nega" type="checkbox"/></label> <label>背景<input id="bg" type="range" min="0" max="255" value="255"/></label></p><p><canvas id="preview-raw" width="60" height="0"></canvas><canvas id="preview-dithered" width="60" height="0"></canvas></p></fieldset><hr/><textarea cols="60" rows="20" id="output"></textarea> <button id="copy-to-clipboard" type="button">クリップボードにコピー</button></body></html>
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

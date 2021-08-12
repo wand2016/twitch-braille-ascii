@@ -31,6 +31,6 @@ export async function loadImageData(
 
   const ctx = tmpCanvas.getContext("2d");
 
-  ctx.drawImage(imageElement, 0, 0, resolution.width, resolution.height);
-  return ctx.getImageData(0, 0, resolution.width, resolution.height);
+  ctx!.drawImage(imageElement, 0, 0, resolution.width, resolution.height);
+  return ctx!.getImageData(0, 0, resolution.width, resolution.height);
 }

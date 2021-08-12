@@ -21,11 +21,11 @@ function putImageDataToCanvas(imageData: ImageData, canvas: HTMLCanvasElement) {
   canvas.width = imageData.width;
   canvas.height = imageData.height;
 
-  canvas.getContext("2d").putImageData(imageData, 0, 0);
+  canvas.getContext("2d")!.putImageData(imageData, 0, 0);
 }
 
 async function update() {
-  const file = getFileSelect().files[0];
+  const file = (getFileSelect().files ?? [])[0];
   if (!file) {
     console.warn("no file selected");
     return;
