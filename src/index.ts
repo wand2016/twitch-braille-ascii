@@ -1,7 +1,9 @@
 import {
   getCanvasPreviewDithered,
   getCanvasPreviewRaw,
+  getClipBoardButton,
   getFileSelect,
+  getNega,
   getOutput,
 } from "./libs/dom";
 const floydSteinberg = require("floyd-steinberg");
@@ -52,7 +54,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-async function onUpload() {
+async function update() {
   const file = getFileSelect().files[0];
   if (!file) {
     console.warn("no file selected");
@@ -69,6 +71,17 @@ async function onUpload() {
       .getContext("2d")
       .getImageData(0, 0, resolution.width, resolution.height)
   );
+
+  if (getNega().checked) {
+    const d = ditheredImageData.data;
+    for (let i = 0; i < d.length; ++i) {
+      // skip alpha
+      if (i % 4 === 3) {
+        continue;
+      }
+      d[i] = 255 - d[i];
+    }
+  }
 
   getCanvasPreviewDithered().width = resolution.width;
   getCanvasPreviewDithered().height = resolution.height;
@@ -88,7 +101,9 @@ function copyToClipboard() {
 
 // entrypoint
 document.addEventListener("DOMContentLoaded", () => {
-  getFileSelect().addEventListener("change", onUpload);
+  getFileSelect().addEventListener("change", update);
+  getNega().addEventListener("change", update);
+  getClipBoardButton().addEventListener("click", copyToClipboard);
 
   console.log("ready");
 });
