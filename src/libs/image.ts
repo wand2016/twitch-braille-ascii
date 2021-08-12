@@ -34,22 +34,3 @@ export async function loadImageData(
   ctx.drawImage(imageElement, 0, 0, resolution.width, resolution.height);
   return ctx.getImageData(0, 0, resolution.width, resolution.height);
 }
-
-export function imageDataToDataUrl(imageData: ImageData): string {
-  const tmpCanvas = document.createElement("canvas");
-  tmpCanvas.width = imageData.width;
-  tmpCanvas.height = imageData.height;
-
-  return tmpCanvas.toDataURL();
-}
-
-export function negateImageData(imageData: ImageData) {
-  const d = imageData.data;
-  for (let i = 0; i < d.length; ++i) {
-    // skip alpha
-    if (i % 4 === 3) {
-      continue;
-    }
-    d[i] = 255 - d[i];
-  }
-}

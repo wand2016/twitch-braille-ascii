@@ -6,8 +6,14 @@ import {
   getNega,
   getOutput,
 } from "./libs/dom";
-import { loadImageData, negateImageData } from "./libs/image";
-const floydSteinberg = require("floyd-steinberg");
+import { loadImageData } from "./libs/image";
+import {
+  composite,
+  dither,
+  identity,
+  negate,
+  transparentToWhite,
+} from "./libs/filter";
 const { tenjify } = require("tenjify");
 
 function putImageDataToCanvas(imageData: ImageData, canvas: HTMLCanvasElement) {
@@ -28,13 +34,15 @@ async function update() {
 
   putImageDataToCanvas(imageData, getCanvasPreviewRaw());
 
-  const ditheredImageData: ImageData = floydSteinberg(imageData);
-  if (getNega().checked) {
-    negateImageData(ditheredImageData);
-  }
+  const filter = composite(
+    dither,
+    getNega().checked ? negate : identity,
+    transparentToWhite
+  );
 
-  putImageDataToCanvas(ditheredImageData, getCanvasPreviewDithered());
+  const filteredImageData = filter(imageData);
 
+  putImageDataToCanvas(filteredImageData, getCanvasPreviewDithered());
   getOutput().value = await tenjify(getCanvasPreviewDithered().toDataURL());
 }
 
