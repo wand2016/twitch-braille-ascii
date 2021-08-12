@@ -1,5 +1,3 @@
-import axios from "axios";
-
 async function loadImageAsImageElement(src: string): Promise<HTMLImageElement> {
   return new Promise((resolved, rejected) => {
     const image = new Image();
@@ -20,10 +18,7 @@ export async function loadImageData(
   src: string,
   width = 60
 ): Promise<ImageData> {
-  const blob = (await axios.get(src, { responseType: "blob" })).data;
-  const url = URL.createObjectURL(blob);
-
-  const imageElement = await loadImageAsImageElement(url);
+  const imageElement = await loadImageAsImageElement(src);
 
   const resolution = {
     width,
