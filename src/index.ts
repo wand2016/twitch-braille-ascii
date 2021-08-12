@@ -1,3 +1,9 @@
+import {
+  getCanvasPreviewDithered,
+  getCanvasPreviewRaw,
+  getFileSelect,
+  getOutput,
+} from "./libs/dom";
 const floydSteinberg = require("floyd-steinberg");
 const { tenjify } = require("tenjify");
 
@@ -9,13 +15,6 @@ type Resolution = {
   width: number;
   height: number;
 };
-
-function getCanvasPreviewRaw(): HTMLCanvasElement {
-  return document.querySelector("#preview-raw") as HTMLCanvasElement;
-}
-function getCanvasPreviewDithered(): HTMLCanvasElement {
-  return document.querySelector("#preview-dithered") as HTMLCanvasElement;
-}
 
 function computeResolution(image: HTMLImageElement): Resolution {
   return {
@@ -53,8 +52,14 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-async function onUpload(this: HTMLInputElement) {
-  const image = await loadImage(URL.createObjectURL(this.files[0]));
+async function onUpload() {
+  const file = getFileSelect().files[0];
+  if (!file) {
+    console.warn("no file selected");
+    return;
+  }
+
+  const image = await loadImage(URL.createObjectURL(file));
 
   const resolution = computeResolution(image);
   await putImageToCanvas(image, getCanvasPreviewRaw(), resolution);
@@ -77,15 +82,13 @@ async function onUpload(this: HTMLInputElement) {
 }
 
 function copyToClipboard() {
-  const output = document.querySelector("#output") as HTMLTextAreaElement;
-  output.select();
+  getOutput().select();
   document.execCommand("copy");
 }
 
 // entrypoint
 document.addEventListener("DOMContentLoaded", () => {
-  const fileUpload = document.querySelector("#file-upload") as HTMLInputElement;
-  fileUpload.addEventListener("change", onUpload);
+  getFileSelect().addEventListener("change", onUpload);
 
   console.log("ready");
 });
