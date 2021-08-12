@@ -1,17 +1,24 @@
 <template>
   <h1>twitchの点字アスキーアートを作るやつ</h1>
-
-  <the-input
-    v-model:nega="input.nega"
-    v-model:bg.number="input.bg"
-    v-model:imageUrl="input.imageUrl"
-  />
-  <the-preview
-    :image-data-raw="preview.imageDataRaw"
-    :image-data-filtered="preview.imageDataFiltered"
-  />
-  <hr />
-  <the-output :model-value="output" />
+  <section>
+    <h2>入力</h2>
+    <the-input
+      v-model:nega="input.nega"
+      v-model:bg="input.bg"
+      @update:imageUrl="onUpdateImageUrl"
+    />
+  </section>
+  <section>
+    <h2>画像プレビュー</h2>
+    <the-preview
+      :image-data-raw="preview.imageDataRaw"
+      :image-data-filtered="preview.imageDataFiltered"
+    />
+  </section>
+  <section>
+    <h2>出力</h2>
+    <the-output :model-value="output" />
+  </section>
 </template>
 
 <script lang="ts">
@@ -56,6 +63,10 @@ export default defineComponent({
 
     const output = ref("");
 
+    const onUpdateImageUrl = (value: string) => {
+      input.imageUrl = value;
+    };
+
     watch(
       () => input,
       async () => {
@@ -82,6 +93,7 @@ export default defineComponent({
       input,
       preview,
       output,
+      onUpdateImageUrl,
     };
   },
 });
@@ -92,8 +104,12 @@ export default defineComponent({
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  width: 640px;
+  margin: 0 auto;
+}
+
+section {
+  padding-left: 1em;
 }
 </style>

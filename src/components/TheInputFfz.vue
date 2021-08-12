@@ -1,9 +1,12 @@
 <template>
   <label>
-    twitchチャンネル名
+    twitchチャンネル名:
     <input type="text" :value="twitchName" @change="onTwitchNameSet" />
   </label>
-  <div>
+  <div v-if="error">
+    {{ error }}
+  </div>
+  <div v-if="ffzImageUrls.length > 0">
     <ul>
       <li
         v-for="ffzImageUrl in ffzImageUrls"
@@ -12,9 +15,9 @@
       >
         <label>
           <input
+            v-model="ffzImageUrlPicked"
             type="radio"
             name="ffz-image"
-            v-model="ffzImageUrlPicked"
             :value="ffzImageUrl"
             @update:modelValue="onPick"
           />
@@ -51,12 +54,28 @@ export default defineComponent({
     const twitchName = ref("");
     const ffzImageUrls = ref([] as string[]);
     const ffzImageUrlPicked = ref("");
+    const error = ref("");
+
+    const tryFetch = async () => {
+      const api = new Api();
+      try {
+        error.value = "";
+        return (await api.v1.roomDetail(twitchName.value)).data;
+      } catch (e) {
+        let detail = "";
+        if (e.error) {
+          const { status, error, message } = e.error;
+          detail = ` ${status} ${error} ${message}`;
+        }
+
+        error.value = "データを読み込めません。" + detail;
+        throw e;
+      }
+    };
     const onTwitchNameSet = async (e: InputEvent) => {
       twitchName.value = (e.target as HTMLInputElement).value;
 
-      const api = new Api();
-
-      const response = (await api.v1.roomDetail(twitchName.value)).data;
+      const response = await tryFetch();
 
       const sets: Record<string, Set> = response.sets as unknown as Record<
         string,
@@ -74,8 +93,6 @@ export default defineComponent({
     const onPick = async (ffzImageUrl: string) => {
       ffzImageUrlPicked.value = ffzImageUrl;
 
-      console.log("picked", ffzImageUrl);
-
       if (ffzImageUrl) {
         const blob = (await axios.get(ffzImageUrl, { responseType: "blob" }))
           .data;
@@ -89,6 +106,7 @@ export default defineComponent({
       twitchName,
       ffzImageUrls,
       ffzImageUrlPicked,
+      error,
       onTwitchNameSet,
       onPick,
     };
@@ -96,4 +114,14 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+ul {
+  list-style-type: none;
+  padding: unset;
+}
+
+ul.horizontal > li {
+  display: inline;
+  white-space: nowrap;
+}
+</style>
