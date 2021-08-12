@@ -6,52 +6,15 @@ import {
   getNega,
   getOutput,
 } from "./libs/dom";
+import { loadImageData, negateImageData } from "./libs/image";
 const floydSteinberg = require("floyd-steinberg");
 const { tenjify } = require("tenjify");
 
-// twitch chat width is 30-character-width.
-// braille has 2 dots a character.
-const WIDTH = 60;
+function putImageDataToCanvas(imageData: ImageData, canvas: HTMLCanvasElement) {
+  canvas.width = imageData.width;
+  canvas.height = imageData.height;
 
-type Resolution = {
-  width: number;
-  height: number;
-};
-
-function computeResolution(image: HTMLImageElement): Resolution {
-  return {
-    width: WIDTH,
-    height: Math.round((WIDTH * image.height) / image.width),
-  };
-}
-
-async function putImageToCanvas(
-  image: CanvasImageSource,
-  canvas: HTMLCanvasElement,
-  resolution: Resolution
-) {
-  canvas.width = resolution.width;
-  canvas.height = resolution.height;
-
-  canvas
-    .getContext("2d")
-    .drawImage(image, 0, 0, resolution.width, resolution.height);
-}
-
-function loadImage(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolved, rejected) => {
-    const image = document.createElement("img");
-
-    image.addEventListener("load", () => {
-      resolved(image);
-    });
-
-    image.addEventListener("error", (e) => {
-      rejected(e);
-    });
-
-    image.src = src;
-  });
+  canvas.getContext("2d").putImageData(imageData, 0, 0);
 }
 
 async function update() {
@@ -61,37 +24,18 @@ async function update() {
     return;
   }
 
-  const image = await loadImage(URL.createObjectURL(file));
+  const imageData = await loadImageData(URL.createObjectURL(file));
 
-  const resolution = computeResolution(image);
-  await putImageToCanvas(image, getCanvasPreviewRaw(), resolution);
+  putImageDataToCanvas(imageData, getCanvasPreviewRaw());
 
-  const ditheredImageData: ImageData = floydSteinberg(
-    getCanvasPreviewRaw()
-      .getContext("2d")
-      .getImageData(0, 0, resolution.width, resolution.height)
-  );
-
+  const ditheredImageData: ImageData = floydSteinberg(imageData);
   if (getNega().checked) {
-    const d = ditheredImageData.data;
-    for (let i = 0; i < d.length; ++i) {
-      // skip alpha
-      if (i % 4 === 3) {
-        continue;
-      }
-      d[i] = 255 - d[i];
-    }
+    negateImageData(ditheredImageData);
   }
 
-  getCanvasPreviewDithered().width = resolution.width;
-  getCanvasPreviewDithered().height = resolution.height;
-  getCanvasPreviewDithered()
-    .getContext("2d")
-    .putImageData(ditheredImageData, 0, 0);
+  putImageDataToCanvas(ditheredImageData, getCanvasPreviewDithered());
 
-  document.querySelector("#output").innerHTML = await tenjify(
-    getCanvasPreviewDithered().toDataURL()
-  );
+  getOutput().value = await tenjify(getCanvasPreviewDithered().toDataURL());
 }
 
 function copyToClipboard() {
