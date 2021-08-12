@@ -1,16 +1,18 @@
+import axios from "axios";
+
 async function loadImageAsImageElement(src: string): Promise<HTMLImageElement> {
   return new Promise((resolved, rejected) => {
-    const imageElement = document.createElement("img");
+    const image = new Image();
 
-    imageElement.addEventListener("load", () => {
-      resolved(imageElement);
+    image.addEventListener("load", () => {
+      resolved(image);
     });
 
-    imageElement.addEventListener("error", (e) => {
+    image.addEventListener("error", (e) => {
       rejected(e);
     });
 
-    imageElement.src = src;
+    image.src = src;
   });
 }
 
@@ -18,7 +20,10 @@ export async function loadImageData(
   src: string,
   width = 60
 ): Promise<ImageData> {
-  const imageElement = await loadImageAsImageElement(src);
+  const blob = (await axios.get(src, { responseType: "blob" })).data;
+  const url = URL.createObjectURL(blob);
+
+  const imageElement = await loadImageAsImageElement(url);
 
   const resolution = {
     width,
@@ -30,17 +35,24 @@ export async function loadImageData(
   tmpCanvas.height = resolution.height;
 
   const ctx = tmpCanvas.getContext("2d");
+  if (!ctx) {
+    throw new Error("canvas context is null");
+  }
 
-  ctx!.drawImage(imageElement, 0, 0, resolution.width, resolution.height);
-  return ctx!.getImageData(0, 0, resolution.width, resolution.height);
+  ctx.drawImage(imageElement, 0, 0, resolution.width, resolution.height);
+  return ctx.getImageData(0, 0, resolution.width, resolution.height);
 }
 
-export function imageDataToDataUrl(imageData: ImageData) {
+export function imageDataToDataUrl(imageData: ImageData): string {
   const tmpCanvas = document.createElement("canvas");
   tmpCanvas.width = imageData.width;
   tmpCanvas.height = imageData.height;
 
-  tmpCanvas.getContext("2d")!.putImageData(imageData, 0, 0);
+  const ctx = tmpCanvas.getContext("2d");
+  if (!ctx) {
+    throw new Error("canvas context is null");
+  }
+  ctx.putImageData(imageData, 0, 0);
 
   return tmpCanvas.toDataURL();
 }

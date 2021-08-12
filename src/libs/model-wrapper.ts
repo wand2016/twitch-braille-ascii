@@ -1,15 +1,18 @@
-import { computed } from "vue";
+import { computed, SetupContext, WritableComputedRef } from "vue";
 
-export function useModelWrapper<Props extends Record<string, any>>(
+export function useModelWrapper<
+  Props extends Record<string, unknown>,
+  Name extends keyof Props
+>(
   props: Props,
-  emit: any,
-  name: keyof Props = "modelValue"
-) {
-  return computed({
+  emit: SetupContext["emit"],
+  name: Name
+): WritableComputedRef<Props[Name]> {
+  return computed<Props[Name]>({
     get() {
       return props[name];
     },
-    set(value: any) {
+    set(value: Props[Name]) {
       emit(`update:${name}`, value);
     },
   });

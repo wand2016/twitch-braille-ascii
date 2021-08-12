@@ -38,9 +38,16 @@ export default defineComponent({
         if (!imageData) {
           return;
         }
-        canvas.value!.width = imageData.width;
-        canvas.value!.height = imageData.height;
-        canvas.value!.getContext("2d")!.putImageData(imageData, 0, 0);
+        if (!canvas.value) {
+          return;
+        }
+        canvas.value.width = imageData.width;
+        canvas.value.height = imageData.height;
+        const ctx = canvas.value.getContext("2d");
+        if (!ctx) {
+          throw new Error("canvas context is null");
+        }
+        ctx.putImageData(imageData, 0, 0);
       }
     );
 
